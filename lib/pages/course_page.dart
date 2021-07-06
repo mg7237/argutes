@@ -8,6 +8,19 @@ class purchasePage extends StatefulWidget {
 }
 
 class _purchasePageState extends State<purchasePage> {
+  Map<String, bool> purchaseMap = {};
+
+  void purchaseComplete(String courseName) {
+    purchaseMap[courseName] = true;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,13 +52,19 @@ class _purchasePageState extends State<purchasePage> {
                             padding: const EdgeInsets.only(top: 20.0),
                             child: InkWell(
                               onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => Purchase(
-                                        subject: document[index]['subject'],
-                                        cost: document[index]['cost']),
-                                  ),
-                                );
+                                if (purchaseMap[document[index]['subject']] ==
+                                    true) {
+                                  print("Already purchased");
+                                } else {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => Purchase(
+                                          subject: document[index]['subject'],
+                                          cost: document[index]['cost'],
+                                          purchaseComplete: purchaseComplete),
+                                    ),
+                                  );
+                                }
                               },
                               child: Container(
                                 height: 150,
@@ -72,11 +91,19 @@ class _purchasePageState extends State<purchasePage> {
                                         SizedBox(
                                           height: 35,
                                         ),
-                                        Text(
-                                          'Buy Now',
-                                          style:
-                                              TextStyle(color: Colors.orange),
-                                        ),
+                                        (purchaseMap[document[index]
+                                                    ['subject']] ==
+                                                true)
+                                            ? Text(
+                                                'Purchased',
+                                                style: TextStyle(
+                                                    color: Colors.blue),
+                                              )
+                                            : Text(
+                                                'Buy Now',
+                                                style: TextStyle(
+                                                    color: Colors.orange),
+                                              )
                                       ],
                                     ),
                                   ),
