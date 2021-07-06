@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_argutes/utility.dart';
 import 'dart:async';
 import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:loading_overlay/loading_overlay.dart';
@@ -24,7 +25,16 @@ class _PurchaseState extends State<Purchase> {
   late StreamSubscription _purchaseErrorSubscription;
   late StreamSubscription _conectionSubscription;
   String _productId = "";
+  String subject = "";
   List<String> _productLists = <String>[];
+
+  @override
+  void dispose() {
+    _purchaseUpdatedSubscription.cancel();
+    _purchaseErrorSubscription.cancel();
+    _conectionSubscription.cancel();
+    super.dispose();
+  }
 
   void initPlatformState() async {
     String? platformVersion = '';
@@ -58,7 +68,7 @@ class _PurchaseState extends State<Purchase> {
       //if (await ApiHelper.verifyPurchase(productItem.transactionReceipt)) {
       FlutterInappPurchase.instance
           .finishTransactionIOS(productItem?.transactionId ?? '');
-      widget.purchaseComplete(widget.subject);
+      widget.purchaseComplete(subject);
       if (this.mounted) Navigator.pop(context); //}
     });
 
@@ -68,10 +78,10 @@ class _PurchaseState extends State<Purchase> {
       if (this.mounted) {
         setState(() {});
       }
-      // AlertDialogs dialog = AlertDialogs(
-      //     title: purchaseError.code,
-      //     message: "Error while purchasing: ${purchaseError.message}");
-      // dialog.asyncAckAlert(context);
+      AlertDialogs dialog = AlertDialogs(
+          title: purchaseError?.code ?? "",
+          message: "Error while purchasing: ${purchaseError?.message}");
+      dialog.asyncAckAlert(context);
     });
 
     await _getProduct();
@@ -95,6 +105,7 @@ class _PurchaseState extends State<Purchase> {
   void initState() {
     super.initState();
     cost = widget.cost;
+    subject = widget.subject;
     initPlatformState();
   }
 
@@ -107,7 +118,7 @@ class _PurchaseState extends State<Purchase> {
         print("Purchase exception: " + e.toString());
       }
     } else {
-      print("Error in inot purchase");
+      print("Error in purchase");
     }
     print("requestPurchase: Cost");
   }

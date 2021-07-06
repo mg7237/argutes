@@ -12,7 +12,9 @@ class _purchasePageState extends State<purchasePage> {
 
   void purchaseComplete(String courseName) {
     purchaseMap[courseName] = true;
-    setState(() {});
+    if (this.mounted) {
+      setState(() {});
+    }
   }
 
   @override
